@@ -1,0 +1,17 @@
+Write a heuristics function for neighborhood search for NCUC
+{function_description.txt}
+
+
+[Prior reflection]
+{Reflection}
+
+[Code]
+{Code of previous best LLM-RBNS}
+
+[Improved code]
+Please write a mutated function `heuristics_v2`, according to the reflection.
+Output code and process of thinking. Keep the function interface the same as the original one.
+Enclose your code with Python code block: ```python ... ```.
+Enclose your explanation about the codes with <desc>...</desc>.
+Enclose physical characteristics used in codes with <phy>...</phy>.
+Attempt to use the physical information of NCUC for designing heuristic functions.

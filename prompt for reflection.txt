@@ -1,0 +1,12 @@
+Below are two heuristics functions for neighborhood search for NCUC
+{function_description.txt}
+
+You are provided with two codes below, where the second version performs better than the first one.
+
+[Worse code]
+{Code of worse LLM-RBNS}
+
+[Better code]
+{Code of better LLM-RBNS}
+
+You respond with some prompts for designing better heuristics, based on the two codes and using less than 50 words.

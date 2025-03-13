@@ -1,0 +1,48 @@
+Write a heuristics function for neighborhood search for NCUC
+This function considers an NCUC problem involving thermal_n generating units and thermal_hour time periods. pg and onoff are decision variables in the NCUC problem, their values are unknown and cannot be used directly for calculation. pg is a continuous variable; pg[m][n] represents the power output of unit m during time period n. onoff is a binary variable; onoff[m][n] indicates the operational state of unit m during time period n, where onoff equals 1 signifies the unit is operating, and otherwise, it is shut down. PG_MAX[m] is the maximum power output of unit m. PG_MIN[m] is the minimum power output of unit m. T_MIN_DOWN[m] is the minimum downtime for unit m. T_MIN_UP[m] is the minimum uptime for unit m. RU[m] is the ramp-up rate of unit m. RD[m] is the ramp-down rate of unit m. a[m], b[m], c[m] are coefficients of the cost function for unit m. PG_SUC[m] is the startup cost of unit m. thermal_n represents the number of generating units, and thermal_hour represents the number of time periods. The function heuristics_v1 accepts the decision variables (pg_relax and onoff_relax) from the root relaxation solution of the NCUC problem, as well as the actual decision variables (pg and onoff), and returns a neighborhood constraint to limit the total extent to which onoff deviates from onoff_relax. alpha[m,n] represents the weight of deviation for onoff[m,n] from the relaxed value onoff_relax[m,n], calculated separately based on whether onoff_relax[m,n] is greater than 0.5 or less than 0.5. neighbor_sum is the weighted sum of deviations between onoff and the relaxed values onoff_relax; this weighted sum must be less than r.
+
+
+[Prior reflection]
+Ensure the function names and interfaces are completely consistent with the given functions.
+Pay attention to the dimensional matching of matrix operations.
+Do not apply absolute value operations to the decision variables onoff or pg.
+Attempt to use the physical information of unit commitment for designing heuristic functions.Ensure the function names and interfaces are completely consistent with the given functions.
+Pay attention to the dimensional matching of matrix operations.
+Do not apply absolute value operations to the decision variables onoff or pg.
+Attempt to use the physical information of unit commitment for designing heuristic functions.
+
+[Code]
+def heuristics_v1(pg_relax: np.ndarray, onoff_relax: np.ndarray, pg: gurobipy.MVar, onoff: gurobipy.MVar, PG_MAX, PG_MIN, T_MIN_DOWN, T_MIN_UP, RU, RD, PL_MAX, a, b, c, PG_SUC, thermal_n, thermal_hour) -> gurobipy.TempConstr
+
+    alpha = np.zeros((thermal_n, thermal_hour))
+    
+    # Define r based on the total number of units and time periods
+    r = thermal_n * thermal_hour / 10
+    
+    # Initialize historical operational costs (mock data for demonstration)
+    historical_costs = np.random.rand(thermal_n) * 1e6  # Random costs between 0 and 1,000,000 for each unit
+
+    for m in range(thermal_n):
+        for n in range(thermal_hour):
+            if onoff_relax[m][n] < 0.5:
+                # Unit is off in the relaxed solution
+                # Penalize more based on startup cost and downtime requirement
+                alpha[m][n] = 2 * (0.5 - onoff_relax[m][n]) * (1 + PG_SUC[m] / 1e6 + T_MIN_DOWN[m] / thermal_hour) * (1 + historical_costs[m] / 1e7)
+            else:
+                # Unit is on in the relaxed solution
+                # Penalize less based on uptime requirement
+                alpha[m][n] = 2 * (onoff_relax[m][n] - 0.5) * (1 + T_MIN_UP[m] / thermal_hour) * (1 + historical_costs[m] / 1e7)
+    
+    neighbor_sum = sum(alpha[m][n] * (onoff[m, n] if onoff_relax[m][n] < 0.5 else (1 - onoff[m, n])) 
+                       for m in range(thermal_n) 
+                       for n in range(thermal_hour))
+    
+    return neighbor_sum <= r
+
+[Improved code]
+Please write a mutated function `heuristics_v2`, according to the reflection.
+Output code and process of thinking. Keep the function interface the same as the original one.
+Enclose your code with Python code block: ```python ... ```.
+Enclose your explanation about the codes with <desc>...</desc>.
+Enclose physical characteristics used in codes with <phy>...</phy>.
+Attempt to use the physical information of NCUC for designing heuristic functions.

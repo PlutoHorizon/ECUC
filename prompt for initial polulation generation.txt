@@ -1,0 +1,22 @@
+Write a heuristics function for neighborhood search for NCUC
+{function_description.txt}
+
+def heuristics_v1(pg_relax: np.ndarray, onoff_relax: np.ndarray, pg: gurobipy.MVar, onoff: gurobipy.MVar,PG_MAX, PG_MIN, T_MIN_DOWN, T_MIN_UP, RU, RD, PL_MAX, a, b, c, PG_SUC, thermal_n, thermal_hour) -> gurobipy.Constr:
+    alpha = np.zeros(pg.shape)
+    r = thermal_n * thermal_hour / 10
+    less_than_half = onoff_relax < 0.5
+    larger_than_half = onoff_relax >= 0.5
+    alpha[less_than_half] = 2*(0.5 - onoff_relax[less_than_half])
+    alpha[larger_than_half] = 2*(onoff_relax[larger_than_half] - 0.5)
+    neighbor_sum = (alpha[less_than_half] * onoff[less_than_half]).sum() + (alpha[larger_than_half] * (1 - onoff[larger_than_half])).sum()
+    return neighbor_sum <= r
+
+Refer to the format of a trivial design above. Be very creative and give `heuristics_v2`.
+Output code and process of thinking.
+Enclose your code with Python code block: ```python ... ```.
+Enclose your explanation about the codes with <desc>...</desc>.
+Enclose physical characteristics used in codes with <phy>...</phy>.
+Ensure the function names and interfaces are completely consistent with the given functions.
+Pay attention to the dimensional matching of matrix operations.
+Do not apply absolute value operations to the decision variables onoff or pg.
+Attempt to use the physical information of NCUC for designing heuristic functions.
